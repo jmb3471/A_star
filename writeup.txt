@@ -1,0 +1,70 @@
+Lab 1 Writeup
+Author: Jonathan Baxley
+9/27/2020
+
+READ THIS: Programs take longer than they should, some programs can take up to 1 minute or more to run
+
+When making my A_star function there were a couple of issues I ran into. These issues were determining
+h(n), g(n), f(n), overall distance, efficiency, and a couple other issues
+
+h(n) -
+    How I calculated my h(n) was using the 3-dimensional distance function. I used the formula
+h(n) = sqrt((x1-x2)^2 + (y1-y2)^2 + (z1-z2)^2) with the x's and y's represent the xy coordinates of each point, and
+the z's representing the elevations of both nodes. My x1,y1,z1 would represent the node being moved to and
+x2,y2,z2 would represent the goal point. I think this is the correct way to represent h(n) because it is the
+best way to guess distance between two nodes ignoring terrain. This method for heuristic is better because
+it tends to underestimate h(n) which is usually optimal. By using 3d distance it also allows for a comparison in
+elevation to be factored into the decision making. It is admissible due to this underestimation while the distance
+formula still allows for the information to be useful
+
+
+g(n) -
+    How I calculated my g(n) was using the 3-dimensioanl distance function multiplied by a color scalar. For each color,
+which represented one of the biomes, I had a constant numerical scalar. They would be ranked based on value with the
+smaller scalar being optimal paths such as paved road or footpath. For places we didn't want to go such as lake or
+impassible vegetation, I would make very large numbers as the scalars so the wouldn't be chosen unless absolutely
+necessary. So g(n) = d(x, y) * color(y), with y representing the node being travelled to and x representing the
+node being travelled from. I chose this way because I wanted the terrain to be scalar instead of additive. I chose
+this way because I felt it would be better to really punish bad options more and reward better options with lower
+scaling.
+
+Efficiency -
+    The biggest issue I had with this lab was efficiency and getting code to run in a reasonable amount of time.
+Ultimately I was not successful in fixing this problem with having many efficiency problems. I do not believe this is
+due to the nature of my heuristics. I believe I implemented A* correctly but had issues with the structures around it.
+The main issue this came from was my usage of the python class. I made my own class called a node which I created
+one for each point visited. I believe that this usage of nodes severely impacted my performance. I realized this mistake
+and replaced the classes with lists which reduced the runtime of red.txt from about 4 minutes to 30 seconds. This is a
+vast improvement but there is still much more improvement that could be made with more time.
+
+Seasons:
+
+Summer -
+    Summer is the assumed state of the image with nothing changing.
+
+Fall -
+    I implemented fall by first searching for path colored pixels. Once I found a path pixel, I explored all of its
+neighbors. I looked through its neighbors to see if any of them were easy movement forest. If they were I would mark
+that pixel as fall and change it accordingly. Fall would be a new color with a new scaling. Doing it this way wasn't
+totally efficient, it ensured that all fall nodes would be changed.
+
+Winter -
+    I implemented winter by first searching for all pixels that were adjacent to a non-lake pixel. From this I added
+all pixels like this to a list for bfs. I then checked for all pixels that were lake adjacent to it in the BFS. Then
+I kept track of the bfs depth. If the depth got over 7, I stopped the dfs for that particular node.
+
+Spring -
+    I implemented spring by doing the same thing as winter except going out of the water instead of inwards. I searched
+for all water edges. Then I iterated out and changed all adjacent nodes into mud. Unfortunately I didn't completely get
+spring working as my mud only goes out 1 for all nodes. This is probably due to my depth in bfs being messed up.
+
+Human-Consumable Output -
+    I implemented human-consumable output in a couple ways. The first way was displaying the path and updated seasons
+into an image. This image would have the name of the given image name in the arguments. I also displayed each point that
+is travelled to and from. The last thing that is displayed is the actual overall distance. To get this information, I
+called A_search between to points for all of the points in the destination run. Once I did that I iterated through that
+list to get both the total distance and overall path.
+
+Overall Distance:
+    I calculated the overall distance by keeping track of the distance between each node and tallying it up as I
+traversed the path. I also account for the difference in the size of each pixel into the distance formula.
